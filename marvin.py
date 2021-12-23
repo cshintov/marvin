@@ -1,32 +1,25 @@
 """ Module Marvin """
 
-import speech_recognition as sr
 import pyttsx3
+import datetime
 import wikipedia
 import webbrowser
+import speech_recognition as sr
 
-import datetime
+from utils import *
 
-engine = pyttsx3.init()
-voices = engine.getProperty('voices')
-
-engine.setProperty('rate', 145)
-engine.setProperty('voice', voices[16].id)
-
-def speak(text):
-    engine.say(text)
-    engine.runAndWait()
+speaker = Speaker()
 
 def wish_me():
     hour = int(datetime.datetime.now().hour)
     if hour >= 0 and hour < 12:
-        speack('Good morning, Sir!')
+        speaker.speak('Good morning, Sir!')
     elif hour >= 12 and hour < 18:
-        speack('Good afternoon, Sir!')
+        speaker.speak('Good afternoon, Sir!')
     else:
-        speak('Good evening, Sir!')
+        speaker.speak('Good evening, Sir!')
 
-    speak('What can I do for you?')
+    speaker.speak('What can I do for you?')
 
 def take_command():
     """ Listens for commands from user """
@@ -50,26 +43,46 @@ def take_command():
     return command
 
 def search_wikipedia(command):
-    speak('Searching Wikipedia...')
+    speaker.speak('Searching Wikipedia...')
     command = command.replace('wikipedia', '')
     results = wikipedia.summary(command, sentences=3)
-    speak('According to Wikipedia')
+    speaker.speak('According to Wikipedia')
     print(results)
-    speak(results)
+    speaker.speak(results)
+
+def create_alarm(command):
+    duration, alert_string = command.split('and')
+    set_alarm(
+        int(convert_to_seconds(duration)), 
+        alert_string
+    )
 
 if __name__ == '__main__':
     wish_me()
 
     while True:
+        print('Listening...')
         command = take_command().lower()
+
+        if 'stop listening' in command:
+            input()
 
         if 'wikipedia' in command:
             search_wikipedia(command)
 
-        elif 'open youtube' in command:
-            webbrowser.open('youtube.com')
+        elif 'open twitter' in command:
+            webbrowser.open('twitter.com')
+
+        elif 'open google' in command:
+            webbrowser.open('google.com')
 
         elif 'the time' in command:
             time = datetime.datetime.now().strftime('%H:%M')
             print(time)
-            speak(f'Sir, the time is ${time}')
+            speaker.speak(f'Sir, the time is {time}')
+
+        elif 'set alarm' in command:
+            try:
+                create_alarm(command.replace('set alarm for', ''))
+            except ValueError:
+                continue
