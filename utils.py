@@ -1,6 +1,7 @@
 """ Utility functions """
 
 import re
+import sys
 import time
 import threading
 import pyttsx3
@@ -21,11 +22,15 @@ class Speaker:
 def wait(duration, alert_string):
     """ Duration in seconds """
     speaker = Speaker()
-    for _ in tqdm(range(duration), desc="waiting...", ascii=True):
+    for _ in tqdm(
+            range(duration), 
+            desc="waiting...", 
+            ascii=True,
+            file=sys.stdout):
         time.sleep(1)
     speaker.speak(alert_string)
 
-def set_alarm(duration, alert_string):
+def set_alarm(duration, alert_string="What should I say?"):
     t1 = threading.Thread(target=wait, args=(duration, alert_string))
     t1.start()
 

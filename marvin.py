@@ -54,7 +54,7 @@ def create_alarm(command):
     duration, alert_string = command.split('and')
     set_alarm(
         int(convert_to_seconds(duration)), 
-        alert_string
+        alert_string if alert_string else 'finished'
     )
 
 if __name__ == '__main__':
